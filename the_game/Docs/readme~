@@ -1,0 +1,30 @@
+README
+	This is a game created as a project in the course TDP005 at Linköping University, 2012	
+
+AUTHORS
+	This game is created by Thomas Henriksson and Hannah Börjesson
+
+INSTALL
+	Requirements for this game to run on Ubuntu:
+		SDL 		libsdl1.2-dev
+		SDL_image 	libsdl-image1.2-dev
+		SDL_ttf 	libsdl-ttf1.2-dev
+		g++ 		with support for c++11
+		make
+
+How to compile the game:
+	Run makefile in the game folder
+
+
+HOW-TO PLAY
+	Compile the game and run 'the_game'.
+	
+	This is a co-op game. 
+	To move player one use keys 'a','d' and 'w'.
+	To move player two use arrowkeys left, right and up.
+	When standing on the yellow zone all the clouds changes state.
+	To win the game or continue to next level both players must stand on a green zone.
+
+
+
+

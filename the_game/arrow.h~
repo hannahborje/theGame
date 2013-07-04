@@ -1,0 +1,14 @@
+#ifndef ARROW_H
+#define ARROW_H
+
+#include "sprite.h"
+
+class Arrow : public Sprite 
+{
+ public:
+  Arrow();
+  void move(int y);
+  
+}; 
+
+#endif
