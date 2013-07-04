@@ -1,0 +1,12 @@
+#include "rain.h"
+
+Rain::Rain(int x, int y)
+   : Sprite("./sprites/rain.png", x, y)
+{
+
+}
+
+void Rain::setX(int x)
+{
+  spriteRect.x += x;
+}

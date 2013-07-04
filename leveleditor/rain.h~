@@ -1,0 +1,19 @@
+#ifndef LIGHTNING_H
+#define LIGHTNING_H
+
+#include "sprite.h"
+
+
+class Lightning : public Sprite
+{
+ public:
+  Lightning(int x, int y);
+  void setX(int x);
+
+ private:
+
+
+};
+
+
+#endif

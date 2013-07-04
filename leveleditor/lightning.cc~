@@ -1,0 +1,10 @@
+#include "lightning.h"
+
+Lightning::Lightning(int x, int y)
+   : Sprite("./sprites/lightning.png", x, y)
+
+
+
+{
+
+}

@@ -1,0 +1,171 @@
+#include "game.h"
+#include <iostream>
+#include <fstream>
+#include "player.h"
+#include "map.h"
+#include "cloud.h"
+#include "timer.h"
+
+
+
+
+using namespace std;
+
+Game::Game()
+{
+}
+
+Game::~Game() 
+{ 
+
+  //Delete all objects
+  for (Map* map : maps) { delete map; }  
+  for (Cloud* cloud : clouds) { delete cloud; }  
+  for (Player* player : players) { delete player; }
+
+
+}
+
+void Game::run()
+{
+  int frame = 0;
+  bool cap = true;   //Whether or not to cap the frame rate
+  Timer fps;  //The frame rate regulator
+  Retry retry;
+
+  loadLevel("./maps/map1.map");
+  
+  while(!gameOver)
+    {
+      //Start the frame timer
+      fps.start();
+
+      Uint8 *keys = SDL_GetKeyState(NULL);
+      SDL_PumpEvents();  
+
+      if (keys[SDLK_r])
+	{
+	  for (Player* player: players)
+	    player->reset();
+
+	  showRetry = false; 
+	}   
+      
+      if(keys[SDLK_ESCAPE]) gameOver = true;
+
+      if (!showRetry)
+	{
+	  if (keys[SDLK_LEFT])  players[0]->move(-4);
+	  if (keys[SDLK_RIGHT]) players[0]->move(4);
+	  if (keys[SDLK_UP])    players[0]->jump();
+
+	  if (keys[SDLK_a])     players[1]->move(-4);
+	  if (keys[SDLK_d])     players[1]->move(4);
+	  if (keys[SDLK_w])     players[1]->jump();   
+
+
+	   maps[0]->draw();    
+
+	  if (players[0]->getYellow() || players[1]->getYellow())
+	    {
+	      strike = true;
+	    }
+	  else
+	    {
+	      strike = false;
+	    }
+ 
+
+	  for (Cloud*& cloud : clouds)
+	    {
+	      cloud->draw();
+	      cloud->move(strike);
+	    }
+
+	  for (Player*& player : players)
+	    {
+	      player->draw();
+	      player->gravity();	
+	      
+	      for (Cloud*& cloud : clouds)
+	      	{
+	      	  if (cloud->getRect().h != 32)
+	      	    {
+	      	      if (checkColl(player->getRect(),cloud->getRect()))
+	      		{
+	      		  showRetry = true;
+	      		  retry.draw();
+	      		}
+	      	    }
+	      	}
+	    }      
+	}//End of showRetry if
+
+
+    
+      SDL_Flip(SDL_GetVideoSurface());
+      
+      //Increment the frame counter
+      frame++;
+      
+      //If we want to cap the frame rate
+      if( (cap == true) && (fps.get_ticks() < 1000 / FRAMES_PER_SECOND) )
+        {
+	  //Sleep the remaining frame time
+	  SDL_Delay( (1000 / FRAMES_PER_SECOND) - fps.get_ticks() );
+        }
+      
+    } //End game-loop
+}
+
+
+void Game::loadLevel(string filename)
+{
+
+  maps.push_back(new Map(filename));
+
+  ifstream infile(filename);
+  string trash;
+
+  //Skip leveldata
+  for (int i = 0; i < SCREEN_HEIGHT/32; ++i)
+    getline(infile,trash,'\n');
+
+  string playerOnePNG, playerTwoPNG;
+  int p1X, p1Y, p2X, p2Y;
+  
+  infile >> playerOnePNG >> p1X >> p1Y >> playerTwoPNG >> p2X >> p2Y;
+
+  players.push_back(new Player(playerOnePNG,p1X,p1Y));
+  players.push_back(new Player(playerTwoPNG,p2X,p2Y));
+  
+  players[0]->setMap(maps[0]);
+  players[1]->setMap(maps[0]);
+  
+
+  int cloudX, cloudY, cloudMovement, cloudDir, cloudThunder;
+
+  while(infile >> cloudX >> cloudY >> cloudMovement >> cloudDir >> cloudThunder)
+    {      
+      clouds.push_back(new Cloud(cloudX,cloudY, cloudMovement, cloudDir, cloudThunder));
+    }
+  
+}
+
+bool Game::checkColl(SDL_Rect& a, SDL_Rect& b)
+{    
+
+  if ((a.x + a.w > b.x && b.x > a.x) || (b.x + b.w > a.x && a.x > b.x))
+    {
+      if ((a.y + a.h > b.y && b.y > a.y) || (b.y + b.h > a.y && a.y > b.y)) 
+	{
+	  return true;
+	}
+    }
+  return false;
+  
+  
+}
+
+Game::Retry::Retry()
+  : Sprite("./sprites/retry.png", 362, 220, 300, 200) { }

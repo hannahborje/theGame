@@ -1,0 +1,96 @@
+#include "menu.h"
+#include "SDL.h"
+#include "game.h"
+
+#include <iostream>
+
+using namespace std;
+
+Menu::Menu()
+{
+  
+  if (SDL_Init(SDL_INIT_VIDEO /*|SDL_INIT_AUDIO*/) == -1) 
+    {
+      cout << "Error initializing SDL" << endl;
+    }
+  
+  screen = SDL_SetVideoMode(SCREEN_WIDTH,SCREEN_HEIGHT, 32, SDL_SWSURFACE|SDL_DOUBLEBUF);
+  
+  if (screen == NULL) 
+    {
+      cout << "Error " << endl;
+    }
+  
+  SDL_WM_SetCaption( "THE GAME", NULL );
+  
+  
+}
+
+Menu::~Menu()
+{
+  SDL_Quit();
+}
+
+
+void Menu::run()
+{
+  bool quit = false;
+  Background background;
+  Arrow arrow;
+
+  while (!quit)
+    {
+      Uint8 *keys = SDL_GetKeyState(NULL);
+      SDL_PumpEvents();  
+
+      if (keys[SDLK_DOWN])  
+	{
+	  arrow.setY(400);
+	  current = 2;
+	}
+      if (keys[SDLK_UP])
+	{ 
+	  arrow.setY(160);
+	  current = 1;
+	}
+      if (keys[SDLK_RETURN])
+	{
+	  switch(current)
+	    {
+	    case 1:
+	      {
+
+		Game* game = new Game;
+		game->run();
+		delete game;
+
+		break;
+	      }
+	    case 2:
+	      {
+		quit = true;
+		break;
+	      }	
+	    }
+	}
+
+      background.draw();
+      arrow.draw();
+      SDL_Flip(screen);
+      SDL_Delay(30);
+    }
+}
+
+Menu::Background::Background()
+   : Sprite("./sprites/menu.png", 0, 0, 1024, 640) 
+{
+
+}
+
+Menu::Arrow::Arrow()
+  : Sprite("./sprites/arrow.png", 200, 160, 32, 32) {}
+
+void Menu::Arrow::setY(int y)
+{
+  spriteRect.y = y;
+}

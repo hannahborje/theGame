@@ -1,0 +1,156 @@
+#include "player.h"
+
+Player::Player(string filename, int x, int y)
+  : Sprite(filename, x, y, 32, 32)
+{
+  startX = x;
+  startY = y;
+}
+
+void Player::move(int xVel)
+{
+
+  if (counter % 8 == 0)
+    {
+      frameRect.x = (frameRect.x + 32 < 64 ? frameRect.x + 32 : 0);
+    }
+
+  int ltileX = (spriteRect.x + xVel) / 32;
+  int ltileY = (spriteRect.y) / 32;
+
+  int rtileX = (spriteRect.x + xVel + spriteRect.w) / 32;
+  int rtileY = (spriteRect.y) / 32;
+
+
+  if ( !collWall(ltileX,ltileY) &&  !collWall(rtileX,rtileY) )
+    {
+      spriteRect.x += xVel;
+    }
+  else
+    {
+      if (xVel > 0)
+	{
+	  spriteRect.x = (rtileX-1)*32;
+	}
+      else
+	{
+	  spriteRect.x = (ltileX+1)*32;
+	}
+    }
+  ++counter;
+}
+
+
+void Player::gravity()
+{   
+
+  //Minska yVel ifall vi har hoppat
+  if (yVel <=  16)
+    {
+      yVel = yVel+2; 
+    }
+    
+  rtileY = (spriteRect.y + yVel + spriteRect.h) / 32; 
+  ltileY = (spriteRect.y + yVel + spriteRect.h) / 32;  
+  rtileX = (spriteRect.x) / 32;
+  ltileX = (spriteRect.x + spriteRect.w - 1) / 32;
+  
+  //Om vi hoppar
+  if (inAir && yVel <= 0)
+    {
+      rtileY = (spriteRect.y + yVel) / 32; 
+      ltileY = (spriteRect.y + yVel) / 32;  
+    }
+
+
+  //Om vi inte krockar
+  if (!collWall(ltileX,ltileY) && !collWall(rtileX,rtileY) )
+    {
+      spriteRect.y += yVel;
+      inAir = true;
+    }
+  else
+    {
+      //Krock med golv
+      if (yVel > 0)
+	{
+	  spriteRect.y = (rtileY-1)*32;
+	  inAir = false;;
+	}
+      //Krock med tak
+      else
+	{
+	  spriteRect.y = (rtileY+1)*32;
+	  yVel = 5;
+	}     
+    }      
+}
+
+void Player::jump()
+{
+  if (!inAir)
+    {
+      yVel = -21;
+      inAir = true;
+      onYellow = false;
+    }
+}
+
+
+
+void Player::setMap(Map*& _map)
+{
+  map = _map;
+}
+
+bool Player::getGreen()
+{
+  return onGreen;
+}
+
+bool Player::getYellow()
+{
+  return onYellow;
+}
+
+
+void Player::reset()
+{
+  spriteRect.x = startX;
+  spriteRect.y = startY;
+}
+
+//--------------------------Private-functions-------------
+
+bool Player::collWall(int x, int y)
+{
+
+  int XY = map->getXY(x,y);
+  
+
+  if (XY == 3)
+    {   
+      onYellow = true;
+    }
+
+  if (XY == 4)
+    {
+      onGreen = true;
+    }
+
+  if (XY == 1)
+    {
+      onYellow = false;
+      onGreen = false;
+    }
+
+  if ( XY == 0 )
+    {      
+      return false;
+    }
+  else
+    {
+      return true;
+    }
+
+}

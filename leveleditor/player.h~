@@ -1,0 +1,38 @@
+#ifndef PLAYER_H
+#define PLAYER_H
+
+#include "sprite.h"
+#include "map.h"
+
+class Player : public Sprite
+{
+
+ public:
+  Player(string filename, int x, int y);
+  void move(int xVel);
+  void gravity();
+  void setMap(Map*& _map);
+  void jump();
+  bool getGreen();
+  bool getYellow();
+
+ private:
+  bool collWall(int x, int y);
+  bool inAir = true;
+  bool onYellow = false;
+  bool onGreen = false;
+  
+  int yVel = 16;
+  int rtileY;
+  int rtileX;
+  int ltileY;
+  int ltileX;
+
+  int counter = 0;
+  
+  Map *map;
+
+};
+
+
+#endif

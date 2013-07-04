@@ -1,0 +1,27 @@
+#ifndef CLOUD_H
+#define CLOUD_H
+
+#include "sprite.h"
+#include "rain.h"
+
+class Cloud : public Sprite
+{
+
+ public:
+  Cloud(int x, int y, int _movement, int _dirX, bool _raining);
+  ~Cloud();
+  
+  //Should it rain?
+  void move(bool rain);
+
+ private:
+  int movement;
+  int counter = 0;
+  int dirX;
+  bool raining;
+  
+  Rain *rain;
+
+};
+
+#endif

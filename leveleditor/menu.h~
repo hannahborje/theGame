@@ -1,0 +1,33 @@
+#ifndef MENU_H
+#define MENU_H
+#include "sprite.h"
+
+class Menu 
+{
+ public:
+  Menu();
+  ~Menu();
+  void run();
+
+ private:
+  const int SCREEN_WIDTH = 1024;
+  const int SCREEN_HEIGHT = 640;
+  SDL_Surface *screen;
+  int current = 1;
+
+  class Background : public Sprite
+  {
+  public:
+    Background();
+  };
+
+  class Arrow : public Sprite 
+  {
+  public:
+    Arrow();
+    void setY(int y);
+  }; 
+
+};
+
+#endif

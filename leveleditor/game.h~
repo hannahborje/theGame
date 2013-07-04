@@ -1,0 +1,47 @@
+#ifndef GAME_H
+#define GAME_H
+
+#include "SDL.h"
+#include "SDL_image.h"
+#include <vector>
+#include <iostream>
+#include "map.h"
+#include "player.h"
+#include "cloud.h"
+
+using namespace std;
+
+class Game
+{
+ public:
+  Game();
+  ~Game();
+  void run();
+
+ private:
+  void loadLevel(string filename);
+  bool checkColl(SDL_Rect& a, SDL_Rect& b);
+
+  bool gameOver = false;
+  
+  vector<Map*> maps;
+  vector<Cloud*> clouds;
+  vector<Player*> players;
+
+  const int SCREEN_WIDTH = 1024;
+  const int SCREEN_HEIGHT = 640;
+  const int FRAMES_PER_SECOND = 30;   
+
+  bool strike;
+  bool showRetry = false;
+
+  class Retry : public Sprite 
+  {
+  public:
+    Retry();
+  };
+
+};
+
+
+#endif

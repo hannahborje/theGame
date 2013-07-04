@@ -1,0 +1,48 @@
+#include "cloud.h"
+
+
+Cloud::Cloud(int x, int y, int _movement, int _dirX, bool _raining)
+  : Sprite("./sprites/cloud.png", x, y)
+{
+  dirX = _dirX;
+  raining = _raining;
+  movement = _movement;
+
+  //Vi matade in pixlar istället för tiles
+  rain = new Rain(spriteRect.x, spriteRect.y + spriteRect.h);
+  
+}
+
+Cloud::~Cloud()
+{
+  delete rain;
+}
+
+void Cloud::move(bool strike)
+{
+
+  //Cloud should only move if movement is set
+  if (movement != 0)
+    {
+
+      //Check when cloud should turn
+      if (counter > movement)
+	{
+	  dirX = -dirX;
+	  counter = 0;
+	}
+
+      //New pos for cloud
+      spriteRect.x += dirX;     
+
+      rain->setX(dirX);
+
+      ++counter;     
+    }
+  
+  if (strike != raining)
+    {
+      rain->draw();
+    }
+  
+}
